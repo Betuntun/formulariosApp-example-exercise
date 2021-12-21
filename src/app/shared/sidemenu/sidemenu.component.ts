@@ -12,6 +12,10 @@ interface MenuItem{
   li {
     cursor:pointer;
   }
+
+  a[title="a"]{
+    color:red;
+  }
   `
   ]
 })
@@ -50,6 +54,18 @@ export class SidemenuComponent  {
       ruta: './reactive/switches'
 
     }
+  ];
+  authMenu: MenuItem[] = [
+    {
+      texto: 'Login',
+      ruta: './auth/login'
+
+    },
+    {
+      texto: 'Registro',
+      ruta: './auth/registro'
+    }
+
   ];
 
 }
