@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validator, Validators } from '@angular/forms';
+import { EmailValidatorService } from 'src/app/shared/validator/email-validator.service';
+import { ValidatorService } from 'src/app/shared/validator/validator.service';
 
 @Component({
   selector: 'app-registro',
@@ -7,9 +10,52 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegistroComponent implements OnInit {
 
-  constructor() { }
+  miFormulario: FormGroup = this.fb.group({
+    nombre:['',[Validators.required, Validators.pattern(this.validatorService.nombreApellidoPatter)]],
+    email:['',[Validators.required, Validators.pattern(this.validatorService.emailPattern) ], [this.emailValidator]],
+    username: ['',[Validators.required, this.validatorService.noPuedeSerStrider]],
+    password: ['',[Validators.required, Validators.minLength(6)]],
+    confirmar: ['',[Validators.required]],
+
+  },{
+    validators: [ this.validatorService.camposIguales('password', 'confirmar')  ]
+  });
+
+  get emailErrorMsg(): string {
+
+    const errors = this.miFormulario.get('email')?.errors;
+    if(errors?.required){
+      return 'Email es obligatorio';
+    }
+    if(errors?.pattern){
+      return 'El valor ingresado no es un email valido';
+    }
+    if(errors?.emailTomado){
+      return 'El email ya esta en uso';
+    }
+
+    return '';
+  }
+
+  constructor(private fb: FormBuilder, private validatorService: ValidatorService, private emailValidator: EmailValidatorService) { }
 
   ngOnInit(): void {
+    this.miFormulario.reset({
+      nombre: "Alberto Villanueva",
+      email: "albertt.villanueva@gmail.com",
+      username: "Betuntun",
+      password: "123456",
+      confirmar: "123456"
+    });
+  }
+
+  campoNoValido(campo:string){
+    return this.miFormulario.get(campo)?.invalid && this.miFormulario.get(campo)?.touched;
+  }
+
+  submit(){
+    console.log(this.miFormulario.value);
+    this.miFormulario.markAllAsTouched();
   }
 
 }
